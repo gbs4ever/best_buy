@@ -1,7 +1,7 @@
-class Item
-    attr_accessor :name, :price ,:url, :sale, :info, :saved
+class Data
+    attr_accessor :name, :price ,:info, :saved
     @@deals=[]
-    def initialize(name, price=nil, url=nil, sale=nil )
+    def initialize(name, price=nil, info=nil, saved=nil )
         @name=name
        @price=price
         @@deals<< self
