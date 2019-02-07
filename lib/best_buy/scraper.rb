@@ -1,7 +1,7 @@
 require 'pry'
 require 'nokogiri'
 require 'open-uri'
-class Scrapper
+class Scraper
     
     #this is test sutie must remove
     def scrape_items
@@ -33,7 +33,7 @@ end
     price=doc.css("span.sr-only")[0].text # price 
     sale = doc.css("div.pricing-price__sale-message").last.text #on sale should return true 
     Item.new(name, price, url, sale)
-    binding.pry
+  
 end
     
 

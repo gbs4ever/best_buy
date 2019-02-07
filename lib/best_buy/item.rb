@@ -4,6 +4,9 @@ class Item
     def initialize(name, price=nil, url=nil, sale=nil )
         @name=name
        @price=price
+       @url=url
+       @sale=sale
+       
         @@deals<< self
     end
 
