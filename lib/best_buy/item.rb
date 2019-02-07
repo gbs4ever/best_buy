@@ -1,13 +1,13 @@
 class Item
-    attr_accessor :name, :price ,:url, :sale, :info, :saved, :long_price, :long_name
+    attr_accessor :name, :price ,:url, :sale, :info, :saved, :long_price, :long_name ,:message
     @@deals=[]
-    def initialize(name, price=nil, url=nil, sale=nil )
+    def initialize(name, price, url=nil, sale=nil, message=nil )
         @name=name
        @price=price
        @url=url
        @sale=sale
-       
-        @@deals<< self
+       @message=message
+       @@deals<< self
     end
 
      

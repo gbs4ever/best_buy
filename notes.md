@@ -13,7 +13,9 @@ rspec
 #.gsub(/\s*/, "")
 
 
-
+items = doc.css(".row offer-row")
+items.each do |item|
+    
 
 
 
