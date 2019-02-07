@@ -1,6 +1,8 @@
 require 'pry'
+require 'nokogiri'
+require 'open-uri'
 class Scrapper
-    attr_accessor :name, :price ,:url, :instock, :shipping
+    
     #this is test sutie must remove
     def scrape_items
     Item.create("ball")
@@ -15,31 +17,38 @@ class Scrapper
 
 def self.url
     doc = Nokogiri::HTML(open("https://www.bestbuy.com/"))
-deals_url=doc.css("ul .deals-ul-0 li") #need to grap the link fix this 
+deals_url=doc.css("ul .deals-ul-0 li a")[2].attribute("href").value
+self.deal_of_the_day(deals_url)
 end
     
 
 #scrapper 2 
     def self.deal_of_the_day(deals_url)
-    #doc = Nokogiri::HTML(open("https://www.bestbuy.com/site/misc/deal-of-the-day/pcmcat248000050016.c?id=pcmcat248000050016"))
+   # doc = Nokogiri::HTML(open("https://www.bestbuy.com/site/misc/deal-of-the-day/pcmcat248000050016.c?id=pcmcat248000050016"))
     doc = Nokogiri::HTML(open(deals_url))
-    #@url_info=item.url=doc.css(".offer-link  a").attribute("href").value
-    item.name=doc.css(".offer-link  a").text # name of item
-    #item.url doc.css(".offer-link  a").attribute("href").value #need to add www.bestbuy to link file=
-    item.price=doc.css(".sr-only").text # price 
-    item.sale = doc.css(".pricing-price__sale-message").text #on sale should return true 
-    end
+    
+    name=doc.css(".offer-link  a").text # name of item
+    url = "https://www.bestbuy.com"
+    url +=doc.css(".offer-link  a").attribute("href").value # link file
+    price=doc.css("span.sr-only")[0].text # price 
+    sale = doc.css("div.pricing-price__sale-message").last.text #on sale should return true 
+    Item.new(name, price, url, sale)
+    binding.pry
+end
     
 
 #scrapper 3
 
-    def self.more_info(@url_info)
-        doc = Nokogiri::HTML(open(url_info))
-        data.saved  =doc.css("div .pricing-price__savings").text #amont saved
-        data.info =doc.css("div #long-description").text #more info
-        data.name =doc.css("h1").text    # name
-        data.price  doc.css("span.sr-only")[0].text # price
-        binding.pry
+    def self.more_info(item)
+        doc = Nokogiri::HTML(open(item.url))
+        item.saved =doc.css("div .pricing-price__savings").text #amont saved
+        item.info =doc.css("div #long-description").text #more info
+        item.long_name =doc.css("h1").text    # name
+        item.long_price = doc.css("span.sr-only")[0].text # price
+      
     end
 
+
+    
 end
+#Scrapper.url

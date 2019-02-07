@@ -1,5 +1,5 @@
 class Item
-    attr_accessor :name, :price ,:url, :sale, :info, :saved
+    attr_accessor :name, :price ,:url, :sale, :info, :saved, :long_price, :long_name
     @@deals=[]
     def initialize(name, price=nil, url=nil, sale=nil )
         @name=name
