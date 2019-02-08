@@ -10,6 +10,7 @@ class Controller
             file=deal
             sleep 1.0
             puts "To see Bonus Deals of the Day press 'bonus'"
+            puts "====================================="
             when"bonus"
             message   
             bonus_deals
@@ -28,6 +29,7 @@ class Controller
     end
         def  deal
             file=Scraper.url
+           
             if file.message == "Add to Cart"
                 price=file.price.split(" ").map {|x| x[/\d+/]}.compact.join("").to_i
                 puts "Today's deals: #{file.name} $#{price}" 
@@ -43,7 +45,7 @@ class Controller
         
      
         def info
-            Scraper.more_info ()
+            Scraper.more_info(file)
             binding.pry
             puts  <<-DOC
             Moreinfo
@@ -58,11 +60,15 @@ class Controller
             Thank you for shopping at Best Buy
             DOC
         end
-                def  bonus_deals
-                bonus=Scraper.bonus_deals
+    def  bonus_deals
+               bonus=Scraper.bonus_deals
+               #bonus.each do |data|  data end
                 binding.pry
-            # puts "Today's bonus deals: #{file.name} $#{file.price}"
-                end
+                #info.price.
+            # puts "Today's bonus deals:#{info.name }"
+            # puts  "$#{info.price}"
+ #            end
+               end
                 def main_menu
                     puts""
                     puts "====================================="
@@ -72,6 +78,7 @@ class Controller
                     puts "what would you like to do"
                     puts""
                     puts "To quit type exit. "
+                    puts "====================================="
                 end
                 
         
@@ -81,6 +88,8 @@ class Controller
                 puts ""
                 sleep 0.8
                 puts "Sorry for the wait , your patience is duly noted !" 
+                puts ""
+                puts ""
         end
 
          

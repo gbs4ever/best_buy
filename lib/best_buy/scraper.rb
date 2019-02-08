@@ -43,6 +43,7 @@ end
         def self.bonus_deals
             list_main=@@doc1.css("div.widget-list-offer-container")
             list= list_main.css(".row")
+            array=[]
             list.each.with_index  do |item,i| item
                 #scrapped data
             name=item.css("h3").text
@@ -50,9 +51,11 @@ end
             url+=item.css("h3 a").attribute("href").value # link file
             price_data=item.css(".col-xs-4").first.text
             price=price_data.split(" ")[0]
-            Item.create(name,price,url) # needs to return after each closes 
-            end
-            item
+             array << Item.new(name,price,url)
+             # this has many deals i need a good way to save it and be able to cal it in cli line 63
+        end
+        array
+       
         end
 
 
