@@ -27,9 +27,8 @@ class Item
     def save
       @@deals << self
     end
-    def self.create(name)
-        item= self.new(name)
-       #item.save
+    def self.create(name,price, url)
+        item= self.new(name,price, url)
         item
    end
       def self.find_by_name(name)

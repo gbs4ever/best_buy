@@ -1,14 +1,7 @@
 class Controller
     def call
-
-        puts "Welcome to Best Buy Deal of the day."
-        puts ""
-        puts "To see today's deal enter 'deal'."
-        puts "what would you like to do"
-        puts""
-        puts "To quit type exit. "
-       
-            input = nil
+        main_menu
+           input = nil
         while input !=  "exit"
         input= gets.strip.downcase
             case input
@@ -43,14 +36,15 @@ class Controller
                 puts "For more information please type more info"
             else
                 puts "There are no deals today see www.bestbuy.com for great coupons"
-                file # is the object
+                file # is the object file.url
             end
         end
         
         
      
-        def info(file)
-            Scraper.more_info (file)
+        def info
+            Scraper.more_info ()
+            binding.pry
             puts  <<-DOC
             Moreinfo
             ================
@@ -69,20 +63,27 @@ class Controller
                 binding.pry
             # puts "Today's bonus deals: #{file.name} $#{file.price}"
                 end
-                    
+                def main_menu
+                    puts""
+                    puts "====================================="
+                    puts "Welcome to Best Buy Deal of the day."
+                    puts ""
+                    puts "To see today's deal enter 'deal'."
+                    puts "what would you like to do"
+                    puts""
+                    puts "To quit type exit. "
+                end
+                
         
-        def message
+        def    message
                 puts "Hold on one second we are searching the web ..........................."
                 puts ""
                 puts ""
                 sleep 0.8
                 puts "Sorry for the wait , your patience is duly noted !" 
-            end
+        end
 
          
-
-
-
 
 
 
