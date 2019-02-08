@@ -26,17 +26,17 @@ end
     price=doc.css("span.sr-only").text if doc.css("span.sr-only") # price 
     sale = doc.css("div.pricing-price__sale-message").text #on sale should return true 
     message= doc.css("div .add-to-cart-button").text
-    Item.new(name, price, url, sale, message)
-  
+    item=Item.new(name, price, url, sale, message)
+   
     end
     
     def self.more_info(item) # item should be object
         
         doc = Nokogiri::HTML(open(item.url))
         item.saved =doc.css("div .pricing-price__savings").text #amont saved
-        item.info =doc.css("div #long-description").text #more info
+        item.info =doc.css("div #long-description").text #more info maybe add css.body-copy-lg
         item.long_name =doc.css("h1").text    # name
-        item.long_price =doc.css("span.sr-only")[0].text # price
+        item.long_price =doc.css("span.sr-only").text # price
     end
 
 
@@ -53,7 +53,8 @@ end
             price=price_data.split(" ")[0]
              array << Item.new(name,price,url)
              # this has many deals i need a good way to save it and be able to cal it in cli line 63
-        end
+       #also is adding each deal 
+            end
         array
        
         end

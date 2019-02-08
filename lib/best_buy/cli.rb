@@ -7,7 +7,7 @@ class Controller
             case input
            when "deal"
             message
-            file=deal
+            deal
             sleep 1.0
             puts "To see Bonus Deals of the Day press 'bonus'"
             puts "====================================="
@@ -16,7 +16,8 @@ class Controller
             bonus_deals
             when "more info"
                 message
-                info(file)
+                info
+                main_menu
             when "exit"
                 puts "Good bye have a good day"
             else
@@ -29,8 +30,8 @@ class Controller
     end
         def  deal
             file=Scraper.url
-           
-            if file.message == "Add to Cart"
+
+           if file.message == "Add to Cart"
                 price=file.price.split(" ").map {|x| x[/\d+/]}.compact.join("").to_i
                 puts "Today's deals: #{file.name} $#{price}" 
                     sleep 0.9
@@ -38,27 +39,35 @@ class Controller
                 puts "For more information please type more info"
             else
                 puts "There are no deals today see www.bestbuy.com for great coupons"
-                file # is the object file.url
+                
             end
+            @file =file# is the object file.url
+                
         end
         
         
      
         def info
-            Scraper.more_info(file)
-            binding.pry
+            file=@file
+           
+            Scraper.more_info(file) # the instance of the item class is not 
+            #getting passed in from the method above 
+        #   binding.pry
             puts  <<-DOC
             Moreinfo
-            ================
-            1. #{item.long_name} 
+     ===========================
+        1. #{file.long_name} 
             
-            2.#{item.long_price}
+        2.#{file.long_price}
+        3.Great  #{file.saved}
+        4. #{file.info}
+            
+---------------------------------------
+        Lets go this item is not #{file.sale} for long! 
            
-            3. #{item.info}
-            4.Great you saved #{item.saved}
-            --------------------------------
-            Thank you for shopping at Best Buy
-            DOC
+        Thank you for shopping at Best Buy , Have a wonderful day!
+        DOC
+
         end
     def  bonus_deals
                bonus=Scraper.bonus_deals
