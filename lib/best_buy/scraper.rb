@@ -42,23 +42,27 @@ end
 
         def self.bonus_deals
             list_main=@@doc1.css("div.widget-list-offer-container")
+
             list= list_main.css(".row")
-            array=[]
-            list.each.with_index  do |item,i| item
+            list.map do |item,i| item
                 #scrapped data
             name=item.css("h3").text
+            #binding.pry
                 url = "https://www.bestbuy.com"
             url+=item.css("h3 a").attribute("href").value # link file
             price_data=item.css(".col-xs-4").first.text
             price=price_data.split(" ")[0]
-             array << Item.new(name,price,url)
+
+
+              Item.create(name,price,url)
              # this has many deals i need a good way to save it and be able to cal it in cli line 63
        #also is adding each deal 
-            end
-        array
-       
+            end.compact
+        #list
+        #binding.pry
         end
 
 
     
+
 end

@@ -28,11 +28,13 @@ class Item
       @@deals << self
     end
     def self.create(name,price, url)
+     if  self.find_by_name(name) == nil
         item= self.new(name,price, url)
-        item
-   end
+        
+      end
+    end
       def self.find_by_name(name)
-        @@all.find {|a|a.name == name}
+        @@deals.find {|a|a.name == name}
       end
 
 end
