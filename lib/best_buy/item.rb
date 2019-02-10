@@ -1,12 +1,13 @@
 class Item
-    attr_accessor :name, :price ,:url, :sale, :info, :saved, :long_price, :long_name ,:message
+    attr_accessor :name, :price ,:url, :sale, :info, :saved, :long_price, :long_name ,:message 
     @@deals=[]
-    def initialize(name, price, url=nil, sale=nil, message=nil )
+    def initialize(name, price, url=nil, sale=nil, message=nil,rating=nil)
         @name=name
        @price=price
        @url=url
        @sale=sale
        @message=message
+       @rating =rating
        @@deals<< self
     end
 
@@ -27,9 +28,9 @@ class Item
     def save
       @@deals << self
     end
-    def self.create(name,price, url)
+    def self.create(name,price, url,rating)
      if  self.find_by_name(name) == nil
-        item= self.new(name,price, url)
+        item= self.new(name,price, url,rating)
         
       end
     end

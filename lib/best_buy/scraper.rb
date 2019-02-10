@@ -45,20 +45,19 @@ end
 
             list= list_main.css(".row")
             list.map do |item,i| item
-                #scrapped data
+            rating=item.css("div.customer-rating div.sr-only").text
             name=item.css("h3").text
-            #binding.pry
-                url = "https://www.bestbuy.com"
+        
+            url = "https://www.bestbuy.com"
             url+=item.css("h3 a").attribute("href").value # link file
             price_data=item.css(".col-xs-4").first.text
             price=price_data.split(" ")[0]
 
 
-              Item.create(name,price,url)
-             # this has many deals i need a good way to save it and be able to cal it in cli line 63
-       #also is adding each deal 
+              item =Item.create(name,price,url,rating)
+             # self.more_info(item)
             end.compact
-        #list
+      
         #binding.pry
         end
 
