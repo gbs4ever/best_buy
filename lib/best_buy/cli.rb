@@ -174,7 +174,7 @@ DOC
                         To quit type exit. 
                         =====================================
                         DOC
-        exit 
+        end 
 
 
 
