@@ -15,13 +15,13 @@ class Controller
             message 
             bonus_deals
             when "menu"
-             main_menu
+            sub_menu 
             when "all"
                 all_deals 
             when "more info"
                 message
                 info
-                main_menu
+                sub_menu 
             when "exit"
                 puts "Good bye have a good day"
             else
@@ -102,23 +102,7 @@ class Controller
             marketing
         end
 
-        def output_info
-            puts  <<-DOC
-            Moreinfo
-           
-    ===========================
-    1. Get this now !! #{file.long_name} 
-    2.#{file.price}
-    3.Great  #{file.saved}
-    4. #{file.info}
-
-    -----------------------------------------------------
-    Lets go, this item is not #{file.sale} for long! 
-    To purchase click here "#{file.url}"
         
-    Thank you for shopping at Best Buy , Have a wonderful day!
-    DOC
-        end
 
 
 
@@ -161,7 +145,7 @@ DOC
             puts ""
         end 
 
-        def sub_menu #not active yet
+        def sub_menu 
         puts <<-DOC
                         =====================================
                         Welcome to Best Buy Deal of the day.
@@ -174,7 +158,28 @@ DOC
                         To quit type exit. 
                         =====================================
                         DOC
+
         end 
+
+        def output_info #not active yet
+            puts  <<-DOC
+            Moreinfo
+           
+    ===========================
+    1. Get this now !! #{file.long_name} 
+    2.#{file.price}
+    3.Great  #{file.saved}
+    4. #{file.info}
+
+    -----------------------------------------------------
+    Lets go, this item is not #{file.sale} for long! 
+    To purchase click here "#{file.url}"
+        
+    Thank you for shopping at Best Buy , Have a wonderful day!
+    DOC
+        end
+
+
 
 
 
