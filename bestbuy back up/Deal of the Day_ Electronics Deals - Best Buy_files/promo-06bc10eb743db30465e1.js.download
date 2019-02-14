@@ -1,6 +1,0 @@
-/*!
- * Build Version: 19.4.8
- * Build Time: Tue Jan 29 2019 14:11:39 GMT-0600 (CST)
- */
-webpackJsonpAnalytics([28],{261:function(a,b,c){"use strict";Object.defineProperty(b,"__esModule",{value:!0});var d=c(0),e=c(20),f=function(a){return a&&a.__esModule?a:{default:a}}(e);b.default={moduleName:"promo",_addToCart:function(a){f.default.buildAddToCartData({eventData:a})},_setEvents:function(){d.analyticsTracker.getData("isAccessoryFinderOpen")||(EventManager.on("addToCart:done:success",this._addToCart.bind(this)),window.addEventListener("beforeunload",function(){}))},_setData:function(){var a=d.analyticsTracker.getData("breadcrumb")||window.siteControlBreadcrumb;a&&a.some(function(a){if("Deal of the Day"===a.displayName)return d.analyticsTracker.setData("internalCampaign","DotD"),!0})},initialize:function(a){return this._setEvents(),this._setData(),a.resolve(this)}},a.exports=b["default"]}});
-//# sourceMappingURL=promo-06bc10eb743db30465e1.js.map

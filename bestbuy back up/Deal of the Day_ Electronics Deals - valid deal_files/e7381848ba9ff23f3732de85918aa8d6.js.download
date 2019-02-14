@@ -1,2 +1,0 @@
-Bootstrapper.bindImmediate(function(){var Bootstrapper=window["Bootstrapper"];var ensightenOptions=Bootstrapper.ensightenOptions;var gtag_code=document.createElement("script");gtag_code.src="https://www.googletagmanager.com/gtag/js?id\x3dDC-4448269";document.head.appendChild(gtag_code);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag("js",new Date);gtag("config","AW-1066288264");gtag("config","DC-4448269");Bootstrapper.ensEvent.trigger("GTag Propagator")},
-2435427,538104);

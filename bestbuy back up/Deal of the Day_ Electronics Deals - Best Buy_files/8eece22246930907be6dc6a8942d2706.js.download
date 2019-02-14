@@ -1,1 +1,0 @@
-Bootstrapper.bindDOMLoaded(function(){var Bootstrapper=window["Bootstrapper"];var ensightenOptions=Bootstrapper.ensightenOptions;Bootstrapper.loadScriptCallback("//vt.myvisualiq.net/2/BGf3s0eQUUaV0Go6Fyo48A%3D%3D/vt-116.js",function(){(function(){}).call(window)})},2353418,520399);
