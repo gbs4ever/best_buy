@@ -1,0 +1,399 @@
+	Bootstrapper.bindImmediate(function(){
+var Bootstrapper = window["Bootstrapper"]; var ensightenOptions = Bootstrapper.ensightenOptions;
+var bbyHL = (function () {
+
+    var hookLogic = {
+
+        data: {},
+
+        makeGuid: function () {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0
+                return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16)
+            })
+        },
+
+        getAssociatedPid: function (extraParams) {
+            var pid = ""
+            if (extraParams && (typeof extraParams === "string")) {
+                pid = extraParams.match(/pid=[^&]+/) || ""
+                pid = Array.isArray(pid) ? pid[0] : pid
+                pid = pid.split("=")
+
+                if (Array.isArray(pid) && pid.length > 1) {
+                    pid = pid[1]
+                } else {
+                    pid = ""
+                }
+            }
+
+            return pid
+        },
+
+        getBeaconUrl: function (url, extraParams, isClickBeacon) {
+            var data = this.data
+            var associatedPid = this.getAssociatedPid(extraParams)
+
+            // maintain the same pid value for both impression and click beacon urls
+            var associatedPidString = associatedPid ? "&pid=" + associatedPid : ""
+
+            var pagePidString = associatedPidString ? "" : "&pid=" + data.pid
+            url = url ? url : '//beam.hlserve.com/beacon?fid=100&partnerid=100&noauction=1&hl_qs=L8fImrKmgdj83R%2bw3LUcEWOXBeOKk%2fnnmJKAdwD5sqSza2qRnsf8YpZTl6gb%2bwoUwzB97ITXFSxMDEYEd0traA%3d%3d&ev=1&action=page'
+            var params = '&creative=' + data.creative + '&puserid=' + encodeURIComponent(data.puserid) + '&cuserid=' + encodeURIComponent(data.cuserid) + associatedPidString + pagePidString + '&searchterms=' + data.term + '&hlpt=' + data.pageType + (data.term ? '&pagetype=search' : '')
+            return url + (isClickBeacon ? "" : params) + (extraParams ? extraParams : '')
+        },
+
+        makeBeacon: function (url) {
+            var img = new Image()
+            img.src = url
+        },
+
+        setCookie: function () {
+            var data = this.data
+            var val
+            try {
+                val = encodeURIComponent(JSON.stringify(data.hlCookie))
+            } catch (ex) {
+                return
+            }
+
+            var days = 30,
+                domain = '.bestbuy.com',
+                expires = '',
+                expiresNow = '',
+                date = new Date()
+
+            date.setTime(date.getTime() + (-1 * 1000))
+            expiresNow = "; expires=" + date.toGMTString()
+
+            if (days) {
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000))
+                expires = "; expires=" + date.toGMTString()
+            }
+
+            document.cookie = data.cookieName + '=' + val + expires + '; path=/; domain=' + domain
+        },
+
+        getCookie: function () {
+            var name = this.data.cookieName + '='
+            var carray = document.cookie.split(';')
+
+            for (var i = 0; i < carray.length; i++) {
+                var c = carray[i]
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1, c.length)
+                }
+                if (c.indexOf(name) == 0) {
+                    var val = c.substring(name.length, c.length)
+                    try {
+                        var json = JSON.parse(decodeURIComponent(val))
+                        return json
+                    } catch (ex) {
+                        return {}
+                    }
+                }
+            }
+
+            return {}
+        },
+
+        deleteCookie: function () {
+            this.setCookie(this.data.cookieName, '', -1)
+        },
+
+        getStorage: function (key) {
+            if (key) {
+                return this.data.hlCookie[key] || ''
+            }
+        },
+
+        setStorage: function (key, val, append) {
+            append = !!append
+            if (key && val) {
+                if (append) {
+                    var max = 15,
+                        currentVal = this.getStorage(key),
+                        allVals
+                    if ((currentVal + ',').indexOf(val + ',') == -1) {
+                        currentVal = currentVal.replace(val + ',', '')
+
+                        val = val + ',' + currentVal
+                        val = val.indexOf(',') == 0 ? val.substring(1) : val
+                        val = val.lastIndexOf(',') == val.length - 1 ? val.substring(0, val.length - 1) : val
+
+                        allVals = val.split(',')
+                        if (allVals.length > max) {
+                            val = allVals.slice(0, max).join(',')
+                        }
+                    }
+                }
+                this.data.hlCookie[key] = val
+                this.setCookie()
+            }
+        },
+
+        removeStorage: function (key) {
+            if (key) {
+                delete this.data.hlCookie[key]
+                this.setCookie()
+            }
+        },
+
+        wireBannerListener: function () {
+            window.EventManager.when("List:Banner:Rendered", this.trackBannerImpressions.bind(this))
+        },
+
+        trackBannerImpressions: function () {
+            var that = this
+            var data = this.data
+            data.$skuBanners = $('.shop-search-sku-banner .list')
+            // smartDebugger();
+            data.$skuBanners.each(function () {
+                var $banner = $(this)
+                var $items = $banner.find('[data-sku-id]')
+                // var bannerId = $banner.attr('data-sku-banner')
+                var pid = that.makeGuid()
+                $banner.data("pid", pid)
+                that.data.pid = pid
+
+                // if (bannerId) {
+                // 	data.bannerType = bannerId.indexOf('HL') > -1 ? 'A' : 'L'
+                // } else {
+                // 	data.bannerType = 'G'
+                // }
+                data.bannerType = 'A' // Temporarily changing this to hardcoded value, need to review
+
+                $items.each(function (i) {
+                    var $this = $(this),
+                        rank = i + 1
+                    var itemPid = that.makeGuid()
+
+                    if ($this.attr('data-impression-beacon') && $this.attr('data-click-beacon')) {
+                        var extraParams = '&pageguid=' + that.data.pid + '&pid=' + itemPid + ':' + rank + '&rank=' + rank
+
+                        // impression beacon
+                        that.makeBeacon(that.getBeaconUrl($this.attr('data-impression-beacon'), extraParams))
+
+                        // store click beacon on click
+                        // $this.siblings('div.product').on('click', 'a', function () {
+                        // 	that.handleBeaconStorage($this, extraParams)
+                        // })
+                        $this.on('click', null, null, function () {
+                            that.handleBeaconStorage($this, extraParams)
+                        })
+                    }
+                })
+            })
+            // track this listing page now that we know what banners are on it
+            that.makeBeacon(that.getBeaconUrl('', '&c=' + data.bannerType))
+        },
+
+        handleBeaconStorage: function ($el, params) {
+            this.setStorage('hlClickBeacon', this.getBeaconUrl($el.attr('data-click-beacon'), params))
+            // document.cookie = `hlClickBeacon=${this.getBeaconUrl($el.attr('data-click-beacon'), params)}`
+        },
+
+        trackBannerClicks: function () {
+            var clickBeacon = this.getStorage('hlClickBeacon')
+            if (clickBeacon) {
+                this.makeBeacon(this.getBeaconUrl(clickBeacon, null, true))
+                this.removeStorage('hlClickBeacon')
+            }
+        },
+
+        trackPage: function () {
+            var that = this
+            var data = this.data
+
+            if (data.loadJS) {
+                var scr = document.createElement('script')
+                var s = document.getElementsByTagName('script')[0]
+                var platform = (document.cookie.match(/bby_rdp=s/)) ? "mobile" : "web"
+                scr.async = true
+                scr.src = '//www.hlserve.com/Delivery/ClientPaths/Library/hook.js?apiKey=edc3023c-9753-4fe6-b0c2-6442e3d5d3dd'
+                s.parentNode.insertBefore(scr, s)
+
+                var timer = setInterval(function () {
+                    if (typeof (HLLibrary) != 'undefined') {
+                        clearInterval(timer)
+                        var hlSkus = that.getStorage('hlClickedSkus') + ',' + that.getStorage('hlViewedSkus') + ','
+                        if (data.orderId != '' && data.items && data.hlSkus) {
+                            var hlSkuList = '',
+                                hlPriceList = '',
+                                hlQtyList = ''
+
+                            for (var i = 0; i < data.items.length; i++) {
+                                if (hlSkus.indexOf(data.items[i].sku + ',') > -1) {
+                                    hlSkuList += (hlSkuList ? '|' : '') + data.items[i].sku
+                                    hlPriceList += (hlPriceList ? '|' : '') + data.items[i].price
+                                    hlQtyList += (hlQtyList ? '|' : '') + data.items[i].quantity
+                                }
+                            }
+
+                            if (hlSkuList) {
+                                HLLibrary.newOrder()
+                                    .setProperty('hlpt', 'C')
+                                    .setProperty('partnerid', '100')
+                                    .setProperty('puserid', data.puserid)
+                                    .setProperty('cuserid', data.cuserid)
+                                    .setProperty('sku', hlSkuList)
+                                    .setProperty('price', hlPriceList)
+                                    .setProperty('quantity', hlQtyList)
+                                    .setProperty('orderId', data.orderId)
+                                    .setProperty('platform', platform)
+                                    .submit()
+                            }
+
+                            that.removeStorage('hlClickedSkus')
+                            that.removeStorage('hlViewedSkus')
+                        } else if (data.skuId) {
+                            HLLibrary.newUpdate()
+                                .setProperty('hlpt', 'P')
+                                .setProperty('partnerid', '100')
+                                .setProperty('puserid', data.puserid)
+                                .setProperty('cuserid', data.cuserid)
+                                .setProperty('sku', data.skuId)
+                                .setProperty('platform', platform)
+                                .submit()
+                        }
+                    }
+                }, 1000)
+            } else if (!data.$skuBanners && data.term) {
+                // fire a listing beacon
+                this.makeBeacon(this.getBeaconUrl('', '&c=' + data.bannerType))
+            }
+        },
+
+        getUserId: function () {
+            const cookieSearch = document.cookie.match(/AMCV[^S][^=]*=([^;]*)/)
+            let amcvValue = (cookieSearch && cookieSearch.length > 1) ? cookieSearch[1] : ''
+            amcvValue = decodeURIComponent(amcvValue)
+            let midValue = amcvValue.match(/MCMID\|([^\|]*)/)
+            midValue = (midValue && midValue.length > 1) ? midValue[1] : ''
+
+            let appVI = document.cookie.match(/app_vi=([^;]*)/)
+            appVI = (appVI && appVI.length > 1) ? appVI[1] : ''
+
+            let hlID = document.cookie.match(/hl_puserid=([^;]*)/)
+            hlID = (hlID && hlID.length > 1) ? hlID[1] : ''
+
+            return hlID || appVI || midValue || ''
+        },
+
+        findCookieByRegex: function (regex) {
+            var cookieCopy = document.cookie.toString();
+            var cookieKeys = cookieCopy
+                .split(';')
+                .map(function (segment) {
+                    return segment
+                        .trim()
+                        .split('=')[0];
+                })
+            cookieKeys = cookieKeys.filter(function (key) {
+                return !!key.match(regex)
+            });
+            cookieKeys = Array.isArray(cookieKeys) && cookieKeys.length ? cookieKeys[0] : -1
+            return cookieKeys;
+        },
+
+        getCookieString: function (key) {
+            var result = null
+            var kvPairs = document.cookie.split(';')
+            kvPairs.forEach(function (pair) {
+                if (pair.trim()
+                    .indexOf(key) === 0) {
+                    result = pair.split('=')[1]
+                }
+            })
+            return result
+        },
+
+        getProductListObject: function () {
+            var products = [],
+                sku, qtys, prices;
+            if (typeof (track.skuList) !== 'undefined') {
+                var sku = track.skuList.split(',');
+                if (typeof (track.qtyList) !== 'undefined') {
+                    qtys = track.qtyList.split(',');
+                }
+                if (typeof (track.priceList) !== 'undefined') {
+                    prices = track.priceList.split(',');
+                }
+                if (qtys && prices) {
+                    for (var i = 0; i < sku.length; i++) {
+                        var qty = qtys[i] || '',
+                            price = prices[i] || '';
+                        if (price && qty) {
+                            price = (parseFloat(price) / parseInt(qty))
+                                .toFixed(2);
+                        }
+                        products.push({
+                            'sku': sku[i],
+                            'quantity': qty,
+                            'price': price
+                        });
+                    }
+                }
+            }
+            return products.length > 0 ? products : '';
+        },
+
+        setData: function () {
+            var bbData = window.dioPageData;
+            var searchTerm = document.location.search.match(/st=([^;]*);/);
+            searchTerm = searchTerm ? searchTerm[1] : '';
+            this.data = {
+                pid: undefined,
+                term: decodeURIComponent(searchTerm || bbData.gvp_searchTerm || ''),
+                bannerType: 'O', // assumes there is no banner
+                pageType: '',
+                puserid: hookLogic.getUserId(),
+                cuserid: '',
+                orderId: track.orderId || '',
+                skuId: track.skuId || '',
+                templateName: window.dioPageData ? window.dioPageData.templateName : (bbData.templateName || ''),
+                items: this.getProductListObject(),
+                loadJS: undefined,
+                cookieName: 'hl',
+                creative: '760x209_T-C-OG_TI_1-3_3SKUBanner',
+                hlCookie: undefined,
+                $skuBanners: undefined
+            }
+            this.data.hlCookie = this.getCookie()
+            this.data.pageType = this.data.term ? 'S' : ''
+            this.data.loadJS = !!(this.data.orderId || this.data.skuId || (this.data.templateName === 'PDH'))
+        },
+
+        init: function () {
+
+            var c = !!document.cookie.match(/kioskType=gaming/)
+            if (typeof (JSON) == 'undefined' || c) {
+                return {
+                    init: function () {}
+                }
+            }
+
+            var that = this
+            that.setData()
+
+            var $banners = $('.shop-search-sku-banner .list')
+
+            if ($banners.length || $banners.find('[data-sku-id]').length > 0) {
+                that.trackBannerImpressions()
+            } else if ($banners) {
+                that.wireBannerListener()
+            }
+            this.trackPage()
+            this.trackBannerClicks()
+
+        }
+    }
+
+    return {
+        init: hookLogic.init.bind(hookLogic),
+        setStorage: hookLogic.setStorage.bind(hookLogic)
+    };
+})();
+bbyHL.init();
+
+},2765247, 518941);

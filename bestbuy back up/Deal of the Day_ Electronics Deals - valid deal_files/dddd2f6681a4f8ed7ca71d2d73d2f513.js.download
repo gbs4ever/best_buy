@@ -1,0 +1,1 @@
+Bootstrapper.bindImmediate(function(){var Bootstrapper=window["Bootstrapper"];var ensightenOptions=Bootstrapper.ensightenOptions;Bootstrapper.loadScriptCallback("//assets.bbystatic.com/clickstream-dotcom/javascript/clickStreamInit-2200fe6908f9af980c29a07835a53001.js",function(){(function(){}).call(window)})},2458571,519546);

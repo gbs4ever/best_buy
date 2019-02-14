@@ -9,7 +9,7 @@ class Controller
             message
             deal
             puts ""
-            puts "To see Bonus Deals spress 'bonus'"
+            puts "To see Bonus Deals type 'bonus'"
             puts "====================================="
             when"bonus"
             message 
@@ -37,6 +37,7 @@ class Controller
                 output(file)
             else
             puts "There are no deals today see https://www.bestbuy.com for great coupons"
+            puts "Come back tomorrow  for  some great deals!"
             end
            @file =file# is the object file.url
         end
