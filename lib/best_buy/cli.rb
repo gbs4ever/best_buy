@@ -69,7 +69,7 @@ class Controller
     @@deal ||= Scraper.bonus_deals
     @@deal.each_with_index do |file, i|
       price = file.price
-      price.remove!(/\a-zA-Z/)
+     # price.remove!(/\a-zA-Z/)
      # .split(' ').delete_if {|x| x[/a-zA-Z/]}
       
      # .map { |x| x[/\d+/] }.compact.join('')
@@ -79,7 +79,7 @@ class Controller
         Bonus deal # #{i + 1}.
     1. Get this now !!
     2.#{file.name}
-    3. #{price}
+    3.
     4.#{file.sale}
 
     Lets go, this item is not on sale for long!
