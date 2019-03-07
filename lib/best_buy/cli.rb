@@ -52,7 +52,7 @@ class Controller
 
     ===========================
     1. Get this now !! #{@file.long_name}
-    2.#{@file.price}
+    2.#{@file.price.gsub("Your","")}
     3.Great  #{@file.saved}
     4. #{@file.info}
 
@@ -68,18 +68,14 @@ class Controller
   def bonus_deals
     @@deal ||= Scraper.bonus_deals
     @@deal.each_with_index do |file, i|
-      price = file.price
-     # price.remove!(/\a-zA-Z/)
-     # .split(' ').delete_if {|x| x[/a-zA-Z/]}
-      
-     # .map { |x| x[/\d+/] }.compact.join('')
-# [a-zA-Z]
+      price = file.price.gsub("Your","")
+     
       puts <<-DOC
     ===========================
         Bonus deal # #{i + 1}.
     1. Get this now !!
     2.#{file.name}
-    3.
+    3.#{price}
     4.#{file.sale}
 
     Lets go, this item is not on sale for long!
@@ -94,7 +90,7 @@ end
   end
 
   # static messages
-  def output(file)
+  def output(file) #fix price
     price = file.price.split(' ').map { |x| x[/\d+/] }.compact.join('').to_i
     puts "Today's deals: #{file.name} $#{price}"
     puts ''
