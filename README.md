@@ -1,3 +1,5 @@
+ #Depreciated due to best buy changing site details !
+
 # BestBuy
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem.This gem is itended to be a CLI command to scrap www.best_buy.com and get the "daily deals".
